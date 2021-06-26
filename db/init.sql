@@ -1,0 +1,8 @@
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('UserNotFound-Err', 'Kullanıcı bulunamadı.', 'TR', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('UserNotFound-Err', 'User not found.', 'EN', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('UserAlreadyExists-Err', 'Kayıtlı kullanıcı.', 'TR', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('UserAlreadyExists-Err', 'User already exists.', 'EN', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('WrongCredentials-Err', 'Giriş bilgilerinizi kontrol ediniz.', 'TR', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('WrongCredentials-Err', 'Check your credentials.', 'EN', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('SomethingWentWrong-Err', 'Geçici süre işleminizi gerçekleştiremiyoruz.', 'TR', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
+INSERT INTO "Localization" (resource, message, language, created_at, updated_at, deleted_at) VALUES ('SomethingWentWrong-Err', 'We are temporarily unable to process your transaction.', 'EN', CURRENT_DATE, null, null) ON CONFLICT DO NOTHING
