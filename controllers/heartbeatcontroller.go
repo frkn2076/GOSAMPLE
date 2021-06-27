@@ -5,8 +5,6 @@ import (
 	"strconv"
 
 	"app/GoSample/config/cache"
-	"app/GoSample/db/nosql"
-	_ "app/GoSample/infra/customeError"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,9 +19,4 @@ func (u *HeartBeatController) GetAllReports(c *gin.Context) {
 func (u *HeartBeatController) ClearCache(c *gin.Context) {
 	cache.Reset()
 	c.AbortWithStatus(200)
-}
-
-func (u *HeartBeatController) GetLogs(c *gin.Context) {
-	result := nosql.GetLogRecord()
-	c.JSON(200, result)
 }
