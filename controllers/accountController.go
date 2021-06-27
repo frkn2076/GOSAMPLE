@@ -6,9 +6,9 @@ import (
 	"app/GoSample/controllers/models/response"
 	"app/GoSample/db/entities"
 	"app/GoSample/db/repo"
+	"app/GoSample/infra/auth"
 	"app/GoSample/infra/constant"
 	"app/GoSample/infra/customeError"
-	"app/GoSample/infra/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,9 +17,16 @@ type AccountController struct{}
 
 func (u *AccountController) Register(context *gin.Context) {
 	var accountRequest request.AccountRequest
-	helper.BindRequest(context, &accountRequest)
+	if isSuccess := helper.BindRequest(context, &accountRequest); !isSuccess{
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
 
-	hashedPassword := helper.HashPassword(context, accountRequest.Password)
+	hashedPassword, isSuccess := helper.HashPassword(context, accountRequest.Password)
+	if !isSuccess {
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
 
 	account := entities.Account{UserName: accountRequest.UserName, Password: hashedPassword}
 
@@ -36,7 +43,10 @@ func (u *AccountController) Register(context *gin.Context) {
 	}
 	transaction.Commit()
 
-	helper.AddToSession(context, constant.UserName, accountRequest.UserName)
+	if isSuccess := helper.AddToSession(context, constant.UserName, accountRequest.UserName); !isSuccess {
+		context.Error(customeError.UserAlreadyExists)
+		return
+	}
 
 	token, err := auth.JWT.GenerateToken(userId)
 	if err != nil {
@@ -44,12 +54,19 @@ func (u *AccountController) Register(context *gin.Context) {
 		return
 	}
 
-	context.JSON(200, response.BaseResponse{IsSuccess: true, Token: token})
+	context.JSON(200, response.AccountResponse{
+			response.BaseResponse{IsSuccess: true,},
+			token,
+		}
+	)
 }
 
 func (u *AccountController) Login(context *gin.Context) {
 	var accountRequest request.AccountRequest
-	helper.BindRequest(context, &accountRequest)
+	if isSuccess := helper.BindRequest(context, &accountRequest); !isSuccess{
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
 
 	account, isSuccess := repo.Account.FirstByUserName(accountRequest.UserName)
 	if !isSuccess {
@@ -57,14 +74,15 @@ func (u *AccountController) Login(context *gin.Context) {
 		return
 	}
 
-	isValidPassword := helper.CheckPasswordHash(accountRequest.Password, account.Password)
-
-	if !isValidPassword {
+	if isValidPassword := helper.CheckPasswordHash(accountRequest.Password, account.Password); !isValidPassword {
 		context.Error(customeError.WrongCredentials)
 		return
 	}
 
-	helper.AddToSession(context, constant.UserName, accountRequest.UserName)
+	if isSuccess := helper.AddToSession(context, constant.UserName, accountRequest.UserName); !isSuccess {
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
 
 	token, err := auth.JWT.GenerateToken(account.Id)
 	if err != nil {
@@ -72,5 +90,9 @@ func (u *AccountController) Login(context *gin.Context) {
 		return
 	}
 
-	context.JSON(200, response.BaseResponse{IsSuccess: true, Token: token})
+	context.JSON(200, response.AccountResponse{
+		response.BaseResponse{IsSuccess: true,},
+		token,
+		}
+	)
 }
