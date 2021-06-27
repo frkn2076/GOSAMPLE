@@ -18,7 +18,10 @@ type TodoController struct{}
 
 func (u *TodoController) AddItem(context *gin.Context) {
 	var todoRequest request.TodoRequest
-	helper.BindRequest(context, &todoRequest)
+	if isSuccess := helper.BindRequest(context, &todoRequest); !isSuccess{
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
 
 	userIdValue := context.GetString("userId")
 	userId, err := strconv.ParseUint(userIdValue, 10, 32)
@@ -39,9 +42,6 @@ func (u *TodoController) AddItem(context *gin.Context) {
 }
 
 func (u *TodoController) GetAllItems(context *gin.Context) {
-	var todoRequest request.TodoRequest
-	helper.BindRequest(context, &todoRequest)
-
 	userId := context.GetString("userId")
 	todoRecords, err := repo.Todo.GetAll(userId)
 	if err != nil {
