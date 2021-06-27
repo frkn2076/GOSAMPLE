@@ -14,10 +14,10 @@ import (
 )
 
 //#region Request/Response
-func BindRequest(c *gin.Context, model interface{}) {
-	if err := c.ShouldBindJSON(&model); err != nil {
+func BindRequest(context *gin.Context, model interface{}) {
+	if err := context.ShouldBindJSON(&model); err != nil {
 		logger.ErrorLog("Invalid request - helper.go - Model:", model, "- Error:", err.Error())
-		c.Error(customeError.SomethingWentWrong)
+		context.Error(customeError.SomethingWentWrong)
 		return
 	}
 }
@@ -25,22 +25,22 @@ func BindRequest(c *gin.Context, model interface{}) {
 //#endregion
 
 //#region Session
-func AddToSession(c *gin.Context, key string, value string) {
+func AddToSession(context *gin.Context, key string, value string) {
 	session := GetSession(c)
 	session.Values[key] = value
-	if err := session.Save(c.Request, c.Writer); err != nil {
+	if err := session.Save(context.Request, context.Writer); err != nil {
 		logger.ErrorLog("An error occured while saving session - helper.go - Error:", err.Error())
-		c.Error(customeError.SomethingWentWrong)
+		context.Error(customeError.SomethingWentWrong)
 		return
 	}
 }
 
-func GetSession(c *gin.Context) *sessions.Session {
+func GetSession(context *gin.Context) *sessions.Session {
 	sessionCookieName := os.Getenv("SessionCookieName")
-	session, err := session.Store.Get(c.Request, sessionCookieName)
+	session, err := session.Store.Get(context.Request, sessionCookieName)
 	if err != nil {
 		logger.ErrorLog("An error occured while getting session - helper.go - Error:", err.Error())
-		c.Error(customeError.SomethingWentWrong)
+		context.Error(customeError.SomethingWentWrong)
 		return nil
 	}
 	return session
@@ -49,12 +49,12 @@ func GetSession(c *gin.Context) *sessions.Session {
 //#endregion
 
 //#region Hashing
-func HashPassword(c *gin.Context, password string) string {
+func HashPassword(context *gin.Context, password string) string {
 	passwordBytes := []byte(password)
 	hashedPasswordBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 	if err != nil {
 		logger.ErrorLog("An error occured while generating crypted password - Register - Error:", err.Error())
-		c.Error(customeError.SomethingWentWrong)
+		context.Error(customeError.SomethingWentWrong)
 		return constant.EmptyString
 	}
 	hashedPassword := string(hashedPasswordBytes)

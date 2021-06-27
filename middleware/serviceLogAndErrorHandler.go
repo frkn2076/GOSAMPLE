@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"bytes"
-	"encoding/json"
-	"time"
-	"io/ioutil"
-	"fmt"
 	"context"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"time"
 
 	"app/GoSample/controllers/models/response"
 	"app/GoSample/db"
@@ -28,19 +28,19 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 }
 
 func ServiceLogAndErrorHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(context *gin.Context) {
 		logRecord := map[string]interface{}{}
 		now := time.Now()
 		current := now.Format("2006-01-02 15:04:05")
-		requestBodyBytes, _ := ioutil.ReadAll(c.Request.Body)
+		requestBodyBytes, _ := ioutil.ReadAll(context.Request.Body)
 		var clientIP string
-		if c.ClientIP() == "::1" {
+		if context.ClientIP() == "::1" {
 			clientIP = "localhost"
 		} else {
-			clientIP = c.ClientIP()
+			clientIP = context.ClientIP()
 		}
 
-		logRecord["RequestURI"] = c.Request.RequestURI
+		logRecord["RequestURI"] = context.Request.RequestURI
 		logRecord["ClientIP"] = clientIP
 		logRecord["RequestedAt"] = current
 
@@ -55,20 +55,20 @@ func ServiceLogAndErrorHandler() gin.HandlerFunc {
 
 		logRecord["RequestBody"] = requestBody
 
-		c.Request.Body = ioutil.NopCloser(bytes.NewReader(requestBodyBytes))
+		context.Request.Body = ioutil.NopCloser(bytes.NewReader(requestBodyBytes))
 
-		bodyLogWriter := &bodyLogWriter{body: bytes.NewBufferString(constant.EmptyString), ResponseWriter: c.Writer}
-		c.Writer = bodyLogWriter
+		bodyLogWriter := &bodyLogWriter{body: bytes.NewBufferString(constant.EmptyString), ResponseWriter: context.Writer}
+		context.Writer = bodyLogWriter
 
-		c.Next() // < the rest of handlers in the chain are executed here!
+		context.Next() // < the rest of handlers in the chain are executed here!
 
-		if len(c.Errors) > 0 {
-			errorMessageKey := c.Errors[0].Error()
+		if len(context.Errors) > 0 {
+			errorMessageKey := context.Errors[0].Error()
 			errorMessage := resource.GetResource(errorMessageKey, language)
 			responseBody := &response.BaseResponse{IsSuccess: false, ErrorMessage: errorMessage} 
 			logRecord["ResponseBody"] = responseBody
 			insertLogRecord(logRecord)
-			c.JSON(200, responseBody)
+			context.JSON(200, responseBody)
 		} else {
 			var responseBody map[string]interface{}
 			if err := json.Unmarshal(bodyLogWriter.body.Bytes(), &responseBody); err != nil {
