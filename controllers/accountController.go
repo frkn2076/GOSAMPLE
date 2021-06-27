@@ -57,8 +57,7 @@ func (u *AccountController) Register(context *gin.Context) {
 	context.JSON(200, response.AccountResponse{
 			response.BaseResponse{IsSuccess: true,},
 			token,
-		}
-	)
+	})
 }
 
 func (u *AccountController) Login(context *gin.Context) {
@@ -93,6 +92,5 @@ func (u *AccountController) Login(context *gin.Context) {
 	context.JSON(200, response.AccountResponse{
 		response.BaseResponse{IsSuccess: true,},
 		token,
-		}
-	)
+	})
 }
