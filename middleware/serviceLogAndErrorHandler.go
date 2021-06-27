@@ -27,10 +27,9 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-func ServiceLogMiddleware() gin.HandlerFunc {
+func ServiceLogAndErrorHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		logRecord := map[string]interface{}{}
-
 		now := time.Now()
 		current := now.Format("2006-01-02 15:04:05")
 		requestBodyBytes, _ := ioutil.ReadAll(c.Request.Body)
