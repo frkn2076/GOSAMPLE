@@ -63,15 +63,7 @@ func initMongoDB() *mongo.Database {
 	logger.InfoLog("Mongo database connection is opened")
 
 	logDB := client.Database("LogDB")
-	// podcastResult, err := podcastsCollection.InsertOne(ctx, bson.D{
-	// 	{Key: "title", Value: "The Polyglot Developer Podcast"},
-	// 	{Key: "author", Value: "Nic Raboy"},
-	// })
-
-	// fmt.Println(podcastResult)
-
 	return logDB
-
 }
 
 func initGorm() *gorm.DB {
