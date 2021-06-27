@@ -17,7 +17,7 @@ import (
 func BindRequest(c *gin.Context, model interface{}) {
 	if err := c.ShouldBindJSON(&model); err != nil {
 		logger.ErrorLog("Invalid request - helper.go - Model:", model, "- Error:", err.Error())
-		c.Error(customeError.RequestBodyIsNotValid)
+		c.Error(customeError.SomethingWentWrong)
 		return
 	}
 }
@@ -30,7 +30,7 @@ func AddToSession(c *gin.Context, key string, value string) {
 	session.Values[key] = value
 	if err := session.Save(c.Request, c.Writer); err != nil {
 		logger.ErrorLog("An error occured while saving session - helper.go - Error:", err.Error())
-		c.AbortWithStatus(500)
+		c.Error(customeError.SomethingWentWrong)
 		return
 	}
 }
@@ -40,7 +40,7 @@ func GetSession(c *gin.Context) *sessions.Session {
 	session, err := session.Store.Get(c.Request, sessionCookieName)
 	if err != nil {
 		logger.ErrorLog("An error occured while getting session - helper.go - Error:", err.Error())
-		c.AbortWithStatus(500)
+		c.Error(customeError.SomethingWentWrong)
 		return nil
 	}
 	return session
@@ -54,7 +54,7 @@ func HashPassword(c *gin.Context, password string) string {
 	hashedPasswordBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 	if err != nil {
 		logger.ErrorLog("An error occured while generating crypted password - Register - Error:", err.Error())
-		c.AbortWithStatus(500)
+		c.Error(customeError.SomethingWentWrong)
 		return constant.EmptyString
 	}
 	hashedPassword := string(hashedPasswordBytes)
