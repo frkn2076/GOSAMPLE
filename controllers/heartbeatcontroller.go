@@ -5,18 +5,19 @@ import (
 	"strconv"
 
 	"app/GoSample/config/cache"
+	"app/GoSample/controllers/models/response"
 
 	"github.com/gin-gonic/gin"
 )
 
 type HeartBeatController struct{}
 
-func (u *HeartBeatController) GetAllReports(c *gin.Context) {
+func (u *HeartBeatController) GetAllReports(context *gin.Context) {
 	report := fmt.Sprintf("Cache average access time: %s milliseconds", strconv.FormatInt(cache.GetAvaregeAccessTime(), 10))
-	c.JSON(200, report)
+	context.JSON(200, report)
 }
 
-func (u *HeartBeatController) ClearCache(c *gin.Context) {
+func (u *HeartBeatController) ClearCache(context *gin.Context) {
 	cache.Reset()
-	c.AbortWithStatus(200)
+	context.JSON(200, response.Success)
 }
