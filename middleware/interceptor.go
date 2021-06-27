@@ -6,9 +6,10 @@ import (
 	"time"
 	"io/ioutil"
 	"fmt"
+	"context"
 
 	"app/GoSample/controllers/models/response"
-	"app/GoSample/db/nosql"
+	"app/GoSample/db"
 	"app/GoSample/infra/constant"
 	"app/GoSample/infra/resource"
 	"app/GoSample/logger"
@@ -31,7 +32,7 @@ func ServiceLogMiddleware() gin.HandlerFunc {
 		logRecord := map[string]interface{}{}
 
 		now := time.Now()
-		current := now.Format("31-01-2006 15:01:01")
+		current := now.Format("2006-01-02 15:04:05")
 		requestBodyBytes, _ := ioutil.ReadAll(c.Request.Body)
 		var clientIP string
 		if c.ClientIP() == "::1" {
@@ -67,7 +68,7 @@ func ServiceLogMiddleware() gin.HandlerFunc {
 			errorMessage := resource.GetResource(errorMessageKey, language)
 			responseBody := &response.BaseResponse{IsSuccess: false, ErrorMessage: errorMessage} 
 			logRecord["ResponseBody"] = responseBody
-			nosql.InsertLogRecord(logRecord)
+			insertLogRecord(logRecord)
 			c.JSON(200, responseBody)
 		} else {
 			var responseBody map[string]interface{}
@@ -77,8 +78,16 @@ func ServiceLogMiddleware() gin.HandlerFunc {
 			} else {
 				logRecord["ResponseBody"] = responseBody
 			}
-			nosql.InsertLogRecord(logRecord)
+			insertLogRecord(logRecord)
 		}
+	}
+}
+
+func insertLogRecord(record map[string]interface{}) {
+	collection := db.MongoDB.Collection("RequestReponseLogs")
+	_, err := collection.InsertOne(context.Background(), record)
+	if err != nil {
+		logger.ErrorLog("An error occured while inserting log record to mongo db - Error:", err.Error(), "- LogRecord:", record)
 	}
 }
 
