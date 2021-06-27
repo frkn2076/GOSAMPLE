@@ -24,7 +24,6 @@ func SetupRouter() *gin.Engine {
 	{
 		grp2.GET("/reports", heartBeatController.GetAllReports)
 		grp2.GET("/clearCache", heartBeatController.ClearCache)
-		grp2.GET("/logs", heartBeatController.GetLogs)
 	}
 
 	return router
