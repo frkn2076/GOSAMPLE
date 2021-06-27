@@ -8,6 +8,5 @@ func init() {
 
 type BaseResponse struct {
 	IsSuccess 		bool   `json:"isSuccess"`
-	ErrorCode   	string `json:"errorCode"`
 	ErrorMessage  string `json:"errorMessage"`
 }
