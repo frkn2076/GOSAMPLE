@@ -30,6 +30,8 @@ func SetupRouter() *gin.Engine {
 	{
 		todoRoute.POST("/add", todoController.AddItem)
 		todoRoute.GET("/getall", todoController.GetAllItems)
+		todoRoute.POST("/update", todoController.UpdateItem)
+		todoRoute.GET("/delete/:todoId", todoController.DeleteItem)
 	}
 		
 	return router
