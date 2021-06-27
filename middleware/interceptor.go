@@ -2,21 +2,16 @@ package middleware
 
 import (
 	"bytes"
-	"io/ioutil"
-
-	// "net/http"
 	"encoding/json"
+	"time"
+	"io/ioutil"
 	"fmt"
-	"unsafe"
 
-	// "app/GoSample/controllers/models/request"
 	"app/GoSample/controllers/models/response"
 	"app/GoSample/db/nosql"
 	"app/GoSample/infra/constant"
-	"app/GoSample/infra/customeError"
 	"app/GoSample/infra/resource"
-
-	// "app/GoSample/logger"
+	"app/GoSample/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +30,9 @@ func ServiceLogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		logRecord := map[string]interface{}{}
 
-		body, _ := ioutil.ReadAll(c.Request.Body)
+		now := time.Now()
+		current := now.Format("31-01-2006 15:01:01")
+		requestBodyBytes, _ := ioutil.ReadAll(c.Request.Body)
 		var clientIP string
 		if c.ClientIP() == "::1" {
 			clientIP = "localhost"
@@ -45,63 +42,43 @@ func ServiceLogMiddleware() gin.HandlerFunc {
 
 		logRecord["RequestURI"] = c.Request.RequestURI
 		logRecord["ClientIP"] = clientIP
-		logRecord["RequestBody"] = string(body)
+		logRecord["RequestedAt"] = current
 
-		c.Request.Body = ioutil.NopCloser(bytes.NewReader(body))
+		var language string
+		var requestBody map[string]interface{}
+		if err := json.Unmarshal(requestBodyBytes, &requestBody); err != nil {
+			logger.ErrorLog("An error occured while request body unmarshal:", requestBodyBytes, " - And selected 'EN' as default language")
+			language = "EN"
+		} else {
+			language = fmt.Sprintf("%v", requestBody["Language"])
+		}
+
+		logRecord["RequestBody"] = requestBody
+
+		c.Request.Body = ioutil.NopCloser(bytes.NewReader(requestBodyBytes))
 
 		bodyLogWriter := &bodyLogWriter{body: bytes.NewBufferString(constant.EmptyString), ResponseWriter: c.Writer}
 		c.Writer = bodyLogWriter
 
 		c.Next() // < the rest of handlers in the chain are executed here!
 
-		errorHandler(c, logRecord)
-
-		responseBody := bodyLogWriter.body.String()
-		logRecord["ResponseBody"] = string(responseBody)
-
-		nosql.InsertLogRecord(logRecord)
+		if len(c.Errors) > 0 {
+			errorMessageKey := c.Errors[0].Error()
+			errorMessage := resource.GetResource(errorMessageKey, language)
+			responseBody := &response.BaseResponse{IsSuccess: false, ErrorMessage: errorMessage} 
+			logRecord["ResponseBody"] = responseBody
+			nosql.InsertLogRecord(logRecord)
+			c.JSON(200, responseBody)
+		} else {
+			var responseBody map[string]interface{}
+			if err := json.Unmarshal(bodyLogWriter.body.Bytes(), &responseBody); err != nil {
+				logger.ErrorLog("An error occured while response body unmarshal", bodyLogWriter.body.Bytes())
+				logRecord["ResponseBody"] = bodyLogWriter.body.String()
+			} else {
+				logRecord["ResponseBody"] = responseBody
+			}
+			nosql.InsertLogRecord(logRecord)
+		}
 	}
 }
 
-func errorHandler(c *gin.Context, logRecord map[string]interface{}) {
-	requestBody := logRecord["RequestBody"]
-	requestBodyBytes := []byte(fmt.Sprintf("%v", requestBody))
-	var language string
-
-	var request map[string]string
-	if err := json.Unmarshal(requestBodyBytes, &request); err != nil {
-		language = request["Language"]
-	} else {
-		language = "EN"
-	}
-
-	if len(c.Errors) > 0 {
-		customeError := *(*customeError.CustomeError)(unsafe.Pointer(&c.Errors[0]))
-		errorCode := customeError.ErrorCode
-		errorMessage := resource.GetResource(customeError.ErrorMessage, language)
-		c.JSON(500, &response.BaseResponse{IsSuccess: false, ErrorCode: string(errorCode), ErrorMessage: errorMessage})
-	}
-	
-
-	// var request request.BaseRequest
-	// if err := c.Bind(&request); err != nil {
-	// 	logger.ErrorLog("Invalid request - Register - interceptor.go - Error:", err.Error())
-	// 	defaultErrorMessage := resource.GetResource(c.Errors[0].Error(), "EN")
-	// 	response := &response.BaseResponse{IsSuccess: false, Message: defaultErrorMessage}
-	// 	logRecord["ResponseBody"] = response
-	// 	c.Writer = &bodyLogWriter{body: bytes.NewBufferString("selam"), ResponseWriter: c.Writer}
-	// 	// c.AbortWithStatusJSON(500, response)
-	// }
-
-	// if len(c.Errors) > 0 {
-	// 	errorMessage := resource.GetResource(c.Errors[0].Error(), language)
-	// 	response := &response.BaseResponse{IsSuccess: false, Message: errorMessage}
-	// 	logRecord["ResponseBody"] = response
-	// 	c.AbortWithStatusJSON(500, response)
-	// }	else if c.Writer.Status() < http.StatusOK || c.Writer.Status() > http.StatusIMUsed {
-	// 	commonErrorMessage := resource.GetResource("SomethingWentWrong-Err", language)
-	// 	logger.ServiceLog("Response: ", c.Request.RequestURI, "- Error Message:", commonErrorMessage)
-	// 	c.AbortWithStatusJSON(c.Writer.Status(), &response.BaseResponse{IsSuccess: false, Message: commonErrorMessage})
-	// 	return
-	// }
-}
