@@ -26,7 +26,7 @@ func BindRequest(context *gin.Context, model interface{}) {
 
 //#region Session
 func AddToSession(context *gin.Context, key string, value string) {
-	session := GetSession(c)
+	session := GetSession(context)
 	session.Values[key] = value
 	if err := session.Save(context.Request, context.Writer); err != nil {
 		logger.ErrorLog("An error occured while saving session - helper.go - Error:", err.Error())
