@@ -22,16 +22,19 @@ func (u *AccountRepo) IsUserNameExist(userName string) bool {
 	return account.Id != 0
 }
 
-func (u *AccountRepo) Create(db *gorm.DB, account entities.Account) {
+func (u *AccountRepo) Create(db *gorm.DB, account entities.Account) uint {
 	if err := db.Create(&account).Error; err != nil {
 		logger.ErrorLog("An error occured while creating account - accountRepo.go - Account:", account, "- Error:", err.Error())
+		return 0
 	}
+	return account.Id
 }
 
-func (u *AccountRepo) IsExist(account entities.Account) bool {
-	var accountCheck entities.Account
-	if err := database.GormDB.First(&accountCheck, "user_name = ? AND password = ? ", account.UserName, account.Password).Error; err != nil {
-		return true
+func (u *AccountRepo) FirstByUserName(userName string) (entities.Account, bool) {
+	var account entities.Account
+	if err := database.GormDB.Where("user_name = ?", userName).First(&account).Error; err != nil {
+		logger.ErrorLog("An error occured while selecting first by username - accountRepo.go - Account:", account, "- Error:", err.Error())
+		return account, false
 	}
-	return false
+	return account, true
 }
