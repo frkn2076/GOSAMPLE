@@ -8,48 +8,69 @@ import (
 	"app/GoSample/db/repo"
 	"app/GoSample/infra/constant"
 	"app/GoSample/infra/customeError"
+	"app/GoSample/infra/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AccountController struct{}
 
-func (u *AccountController) Register(c *gin.Context) {
+func (u *AccountController) Register(context *gin.Context) {
 	var accountRequest request.AccountRequest
-	helper.BindRequest(c, &accountRequest)
+	helper.BindRequest(context, &accountRequest)
 
-	hashedPassword := helper.HashPassword(c, accountRequest.Password)
+	hashedPassword := helper.HashPassword(context, accountRequest.Password)
 
 	account := entities.Account{UserName: accountRequest.UserName, Password: hashedPassword}
 
 	if isUserNameExist := repo.Account.IsUserNameExist(account.UserName); isUserNameExist {
-		c.Error(customeError.UserAlreadyExists)
+		context.Error(customeError.UserAlreadyExists)
 		return
 	}
 
-	tx := repo.BeginTransaction()
-	repo.Account.Create(tx, account)
-	tx.Commit()
+	transaction := repo.BeginTransaction()
+	userId := repo.Account.Create(transaction, account)
+	if userId == 0 {
+		context.Error(customeError.WrongCredentials)
+		return
+	}
+	transaction.Commit()
 
-	helper.AddToSession(c, constant.UserName, accountRequest.UserName)
+	helper.AddToSession(context, constant.UserName, accountRequest.UserName)
 
-	c.JSON(200, response.Success)
+	token, err := auth.JWT.GenerateToken(userId)
+	if err != nil {
+		context.Error(customeError.WrongCredentials)
+		return
+	}
+
+	context.JSON(200, response.BaseResponse{IsSuccess: true, Token: token})
 }
 
-func (u *AccountController) Login(c *gin.Context) {
+func (u *AccountController) Login(context *gin.Context) {
 	var accountRequest request.AccountRequest
-	helper.BindRequest(c, &accountRequest)
+	helper.BindRequest(context, &accountRequest)
 
-	hashedPassword := helper.HashPassword(c, accountRequest.Password)
-
-	account := entities.Account{UserName: accountRequest.UserName, Password: hashedPassword}
-
-	if isExist := repo.Account.IsExist(account); !isExist {
-		c.Error(customeError.WrongCredentials)
+	account, isSuccess := repo.Account.FirstByUserName(accountRequest.UserName)
+	if !isSuccess {
+		context.Error(customeError.WrongCredentials)
 		return
 	}
 
-	helper.AddToSession(c, constant.UserName, accountRequest.UserName)
+	isValidPassword := helper.CheckPasswordHash(accountRequest.Password, account.Password)
 
-	c.JSON(200, response.Success)
+	if !isValidPassword {
+		context.Error(customeError.WrongCredentials)
+		return
+	}
+
+	helper.AddToSession(context, constant.UserName, accountRequest.UserName)
+
+	token, err := auth.JWT.GenerateToken(account.Id)
+	if err != nil {
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
+
+	context.JSON(200, response.BaseResponse{IsSuccess: true, Token: token})
 }
