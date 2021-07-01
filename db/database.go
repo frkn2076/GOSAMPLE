@@ -73,7 +73,7 @@ func initGorm() *gorm.DB {
 			Conn: PostgreDB, // Initialize gorm with the existing db connection
 		}),
 		&gorm.Config{
-			Logger:                 logger.QueryLogger,
+			// Logger:                 logger.QueryLogger,
 			SkipDefaultTransaction: true,
 		},
 	)
@@ -82,7 +82,7 @@ func initGorm() *gorm.DB {
 		os.Exit(0)
 	}
 
-	gormDB.AutoMigrate(&entities.Account{}, &entities.Localization{})
+	gormDB.AutoMigrate(&entities.Account{}, &entities.Localization{}, &entities.Todo{})
 
 	InitScripts(PostgreDB)
 	logger.InfoLog("Init sql script has runned")

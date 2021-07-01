@@ -6,14 +6,14 @@ import (
 	"os"
 	"time"
 
-	"gorm.io/gorm/logger"
+	// "gorm.io/gorm/logger"
 )
 
 var info *log.Logger = initFileLogger("InfoLog")
 var error *log.Logger = initFileLogger("ErrorLog")
 var service *log.Logger = initFileLogger("ServiceLog")
 var transaction *log.Logger = initFileLogger("TransactionLog")
-var QueryLogger logger.Interface = initQueryLogger("TransactionLog")
+// var QueryLogger logger.Interface = initQueryLogger("TransactionLog")
 
 func ErrorLog(logText ...interface{}) {
 	error.Println(logText)
@@ -54,17 +54,18 @@ func initFileLogger(folderName string) *log.Logger {
 	return logger
 }
 
-func initQueryLogger(folderName string) logger.Interface {
-	transactionLogger := initFileLogger(folderName)
-	newLogger := logger.New(
-		transactionLogger,
-		logger.Config{
-			SlowThreshold:             time.Second, // Slow SQL threshold
-			LogLevel:                  logger.Info, // Log level
-			IgnoreRecordNotFoundError: false,       // Ignore ErrRecordNotFound error for logger
-			Colorful:                  false,       // Disable color
-		},
-	)
-	return newLogger
-}
+// removed since gorm unsupport versions
+// func initQueryLogger(folderName string) logger.Interface {
+// 	transactionLogger := initFileLogger(folderName)
+// 	newLogger := logger.New(
+// 		transactionLogger,
+// 		logger.Config{
+// 			SlowThreshold:             time.Second, // Slow SQL threshold
+// 			LogLevel:                  logger.Info, // Log level
+// 			IgnoreRecordNotFoundError: false,       // Ignore ErrRecordNotFound error for logger
+// 			Colorful:                  false,       // Disable color
+// 		},
+// 	)
+// 	return newLogger
+// }
 
