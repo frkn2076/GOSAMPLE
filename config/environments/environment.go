@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	environment := os.Getenv("Environment")
+	environment := os.Args[1]
 	if environment != "PROD" && environment != "STAGE" && environment != "DEV" {
 		environment = "LOCAL-DEFAULT"
 	}
