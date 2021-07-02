@@ -1,10 +1,23 @@
 version: '3.4'
 
 services:
+  gosample:
+    image: 'gosample'
+    container_name: 'gosample-container'
+    build: .
+    command: go run main.go ${ENV}
+    ports:
+      - '5000:5000'
+    depends_on:
+      - postgredb
+      - nosqldb
+    restart: always
+    networks:
+      - gosample-network
+
   postgredb:
     image: 'postgres:13-alpine'
     container_name: 'postgredb-container'
-    hostname: postgre
     environment:
       - POSTGRES_USER=uSeR1
       - POSTGRES_PASSWORD=12345
@@ -27,19 +40,6 @@ services:
       - '27017:27017'
     volumes:
       - nosqldb-volume:/data/db
-    restart: always
-    networks:
-      - gosample-network
-
-  gosample:
-    image: 'gosample'
-    container_name: 'gosample-container'
-    build: .
-    ports:
-      - '5000:5000'
-    depends_on:
-      - postgredb
-      - nosqldb
     restart: always
     networks:
       - gosample-network
