@@ -73,7 +73,7 @@ func initGorm() *gorm.DB {
 			Conn: PostgreDB, // Initialize gorm with the existing db connection
 		}),
 		&gorm.Config{
-			// Logger:                 logger.QueryLogger,
+			Logger:                 logger.QueryLogger,
 			SkipDefaultTransaction: true,
 		},
 	)
