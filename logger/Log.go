@@ -5,13 +5,13 @@ import (
 	"log"
 	"os"
 	"time"
+	"strings"
 
 	"gorm.io/gorm/logger"
 )
 
 var info *log.Logger = initFileLogger("InfoLog")
 var error *log.Logger = initFileLogger("ErrorLog")
-var service *log.Logger = initFileLogger("ServiceLog")
 var transaction *log.Logger = initFileLogger("TransactionLog")
 var QueryLogger logger.Interface = initQueryLogger("TransactionLog")
 
@@ -21,10 +21,6 @@ func ErrorLog(logText ...interface{}) {
 
 func InfoLog(logText ...interface{}) {
 	info.Println(logText)
-}
-
-func ServiceLog(logText ...interface{}) {
-	service.Println(logText)
 }
 
 func TransactionLog(logText ...interface{}) {
@@ -41,6 +37,12 @@ func initFileLogger(folderName string) *log.Logger {
 	//check log file created before
 	_, err := os.Stat(fileName)
 	fileNotExist := os.IsNotExist(err)
+
+	if fileNotExist { 
+		folderPath := strings.TrimSuffix(loggerFilePath, "/%s.log")
+		formattedFolderPath := fmt.Sprintf(folderPath, folderName)
+    os.MkdirAll(formattedFolderPath, 0700) // Create your folder
+	}
 
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
