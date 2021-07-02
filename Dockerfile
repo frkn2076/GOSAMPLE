@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:alpine
 
 ENV GOPATH /go
 RUN go env -w GO111MODULE=on
