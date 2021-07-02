@@ -1,8 +1,23 @@
-* To run docker compose
-docker-compose --env-file ./config/environments/DEV.env up
+# GOSAMPLE
 
-* To start postgre docker instance explicitly 
-docker run -p 5432:5432 --name sampledb -e POSTGRES_USER=uSeR1 -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=SampleDB -d postgres:13-alpine
+<br>
 
-* To start mongo docker instance explicitly 
-docker run -p 27017:27017 --name logsdb -e MONGO_INITDB_ROOT_USERNAME=uSeRrr -e MONGO_INITDB_ROOT_PASSWORD=PassWorD -d mongo
+## To run docker compose
+* **Modify.env file first. It has ENV=DEV as default.**
+   - Set ENV variable as DEV to run Development environment (like ENV=DEV)
+   - Set ENV variable as STAGE to run Staging environment (like ENV=STAGE)
+   - Set ENV variable as PROD to run Production environment (like ENV=PROD)
+* **docker-compose --env-file .env up**
+
+<br>
+
+## To run on local machine
+* **You may want to have database instances on docker while running project locally.**
+   - To start postgre docker instance
+      - docker run -p 5432:5432 --name sampledb -e POSTGRES_USER=uSeR1 -e POSTGRES_PASSWORD=12345 -e POSTGRES_DB=SampleDB -d postgres:13-alpine
+   - To start mongo docker instance
+      - docker run -p 27017:27017 --name logsdb -e MONGO_INITDB_ROOT_USERNAME=uSeRrr -e MONGO_INITDB_ROOT_PASSWORD=PassWorD -d mongo
+* **go run main.go {ENV}**
+   - **go run main.go** (runs with default config, see ./config/environments/LOCAL-DEFAULT.env)
+   - **go run main.go DEV** (runs Development environment locally)
+
