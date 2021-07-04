@@ -65,7 +65,10 @@ func (middleware *ServiceLogAndErrorMiddleware) ServiceLogAndErrorHandler() gin.
 		bodyLogWriter := &bodyLogWriter{body: bytes.NewBufferString(constant.EmptyString), ResponseWriter: context.Writer}
 		context.Writer = bodyLogWriter
 
-		context.Next() // < the rest of handlers in the chain are executed here!
+		// check whether error comes from pre middleware
+		if len(context.Errors) == 0 {
+			context.Next() 
+		}
 
 		if len(context.Errors) > 0 {
 			errorMessageKey := context.Errors[0].Error()
