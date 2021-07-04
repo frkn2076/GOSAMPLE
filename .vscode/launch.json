@@ -8,10 +8,19 @@
             "name": "Launch",
             "type": "go",
             "request": "launch",
-            "mode": "auto",
+            "mode": "debug",
             "program": "${fileDirname}",
             "env": {},
             "args": []
-        }
+        },
+        {
+          "name": "Launch-Test",
+          "type": "go",
+          "request": "launch",
+          "mode": "test",
+          "program": "${fileDirname}",
+          "env": {},
+          "args": []
+      }
     ]
 }
