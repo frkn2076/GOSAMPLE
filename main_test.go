@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"app/GoSample/db/repo"
 	"app/GoSample/db"
@@ -48,6 +49,13 @@ func TestLogin(t *testing.T) {
 	loginAddToSessionFailCase(t)
 	loginGenerateTokenFailCase(t)
 	loginSuccessfullyCase(t)
+}
+
+func TestAddItem(t *testing.T) {
+	addItemRequestFailCase(t)
+	addItemStringToUintCase(t)
+	addItemCreateTodoFailCase(t)
+	addItemSuccessfullyCase(t)
 }
 
 func registerRequestFailCase(t *testing.T){
@@ -503,4 +511,147 @@ func loginSuccessfullyCase(t *testing.T){
 	assert.Equal(t, 200, responseWriter.Code)
 	assert.True(t, responseBody.BaseResponse.IsSuccess)
 	assert.Equal(t, responseBody.Token, "DummyToken")
+}
+
+func addItemRequestFailCase(t *testing.T){
+	// Arrange
+	var mockTodoRepo repo.ITodoRepo = mocks.MockTodoRepo{}
+	var mockRepo repo.IRepo = mocks.MockRepo{}
+	var mockHelper helper.IHelper = mocks.MockRequestFailHelper{}
+	todoController := controllers.TodoController{TodoRepo: mockTodoRepo, Repo: mockRepo, Helper: mockHelper}
+
+	responseWriter := httptest.NewRecorder()
+	context, router := gin.CreateTestContext(responseWriter)
+
+	var mockLocalizationRepo repo.ILocalizationRepo = mocks.MockLocalizationRepo{}
+	var mockMongoOperator db.IMongo = mocks.MockMongoOperator{}
+	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: mockLocalizationRepo, MongoOperator: mockMongoOperator}
+	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
+	router.POST("add", todoController.AddItem)
+
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	 Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
+	requestBytes, _ := json.Marshal(request)
+
+	context.Request, _ = http.NewRequest(http.MethodPost, "/add", bytes.NewBuffer(requestBytes))
+
+	// Act
+	router.ServeHTTP(responseWriter, context.Request)
+
+	// Assert
+	var responseBody res.AccountResponse
+	if err := json.Unmarshal(responseWriter.Body.Bytes(), &responseBody); err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, 200, responseWriter.Code)
+	assert.False(t, responseBody.BaseResponse.IsSuccess)
+	assert.Equal(t, responseBody.BaseResponse.ErrorMessage, "DummyMessage")
+}
+
+func addItemStringToUintCase(t *testing.T){
+	// Arrange
+	var mockTodoRepo repo.ITodoRepo = mocks.MockTodoRepo{}
+	var mockRepo repo.IRepo = mocks.MockRepo{}
+	var mockHelper helper.IHelper = mocks.MockStringToUintFailHelper{}
+	todoController := controllers.TodoController{TodoRepo: mockTodoRepo, Repo: mockRepo, Helper: mockHelper}
+
+	responseWriter := httptest.NewRecorder()
+	context, router := gin.CreateTestContext(responseWriter)
+
+	var mockLocalizationRepo repo.ILocalizationRepo = mocks.MockLocalizationRepo{}
+	var mockMongoOperator db.IMongo = mocks.MockMongoOperator{}
+	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: mockLocalizationRepo, MongoOperator: mockMongoOperator}
+	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
+	router.POST("add", todoController.AddItem)
+
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	 Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
+	requestBytes, _ := json.Marshal(request)
+
+	context.Request, _ = http.NewRequest(http.MethodPost, "/add", bytes.NewBuffer(requestBytes))
+
+	// Act
+	router.ServeHTTP(responseWriter, context.Request)
+
+	// Assert
+	var responseBody res.AccountResponse
+	if err := json.Unmarshal(responseWriter.Body.Bytes(), &responseBody); err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, 200, responseWriter.Code)
+	assert.False(t, responseBody.BaseResponse.IsSuccess)
+	assert.Equal(t, responseBody.BaseResponse.ErrorMessage, "DummyMessage")
+}
+
+func addItemCreateTodoFailCase(t *testing.T){
+	// Arrange
+	var mockTodoRepo repo.ITodoRepo = mocks.MockCreateTodoFailTodoRepo{}
+	var mockRepo repo.IRepo = mocks.MockRepo{}
+	var mockHelper helper.IHelper = mocks.MockHelper{}
+	todoController := controllers.TodoController{TodoRepo: mockTodoRepo, Repo: mockRepo, Helper: mockHelper}
+
+	responseWriter := httptest.NewRecorder()
+	context, router := gin.CreateTestContext(responseWriter)
+
+	var mockLocalizationRepo repo.ILocalizationRepo = mocks.MockLocalizationRepo{}
+	var mockMongoOperator db.IMongo = mocks.MockMongoOperator{}
+	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: mockLocalizationRepo, MongoOperator: mockMongoOperator}
+	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
+	router.POST("add", todoController.AddItem)
+
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	 Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
+	requestBytes, _ := json.Marshal(request)
+
+	context.Request, _ = http.NewRequest(http.MethodPost, "/add", bytes.NewBuffer(requestBytes))
+
+	// Act
+	router.ServeHTTP(responseWriter, context.Request)
+
+	// Assert
+	var responseBody res.AccountResponse
+	if err := json.Unmarshal(responseWriter.Body.Bytes(), &responseBody); err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, 200, responseWriter.Code)
+	assert.False(t, responseBody.BaseResponse.IsSuccess)
+	assert.Equal(t, responseBody.BaseResponse.ErrorMessage, "DummyMessage")
+}
+
+func addItemSuccessfullyCase(t *testing.T){
+	// Arrange
+	var mockTodoRepo repo.ITodoRepo = mocks.MockTodoRepo{}
+	var mockRepo repo.IRepo = mocks.MockRepo{}
+	var mockHelper helper.IHelper = mocks.MockHelper{}
+	todoController := controllers.TodoController{TodoRepo: mockTodoRepo, Repo: mockRepo, Helper: mockHelper}
+
+	responseWriter := httptest.NewRecorder()
+	context, router := gin.CreateTestContext(responseWriter)
+
+	var mockLocalizationRepo repo.ILocalizationRepo = mocks.MockLocalizationRepo{}
+	var mockMongoOperator db.IMongo = mocks.MockMongoOperator{}
+	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: mockLocalizationRepo, MongoOperator: mockMongoOperator}
+	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
+	router.POST("add", todoController.AddItem)
+
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	 Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
+	requestBytes, _ := json.Marshal(request)
+
+	context.Request, _ = http.NewRequest(http.MethodPost, "/add", bytes.NewBuffer(requestBytes))
+
+	// Act
+	router.ServeHTTP(responseWriter, context.Request)
+
+	// Assert
+	var responseBody res.BaseResponse
+	if err := json.Unmarshal(responseWriter.Body.Bytes(), &responseBody); err != nil {
+		panic(err)
+	}
+
+	assert.Equal(t, 200, responseWriter.Code)
+	assert.True(t, responseBody.IsSuccess)
 }
