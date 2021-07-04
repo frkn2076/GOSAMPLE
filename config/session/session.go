@@ -9,8 +9,7 @@ import (
 // Store will hold all session data
 var Store *sessions.CookieStore
 
-func init() {
-
+func Start() {
 	secretKey := os.Getenv("SessionSecretKey")
 	cookieStore := sessions.NewCookieStore([]byte(secretKey))
 
