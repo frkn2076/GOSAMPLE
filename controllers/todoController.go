@@ -59,32 +59,10 @@ func (controller *TodoController) GetAllItems(context *gin.Context) {
 		todos = append(todos, todo)
 	}
 
-	context.JSON(200, response.TodosResponse{Todos: todos})
-}
-
-func (controller *TodoController) DeleteItem(context *gin.Context) {
-	todoIdValue := context.Param("todoId")
-	todoId, isSuccess := controller.Helper.StringToUint(todoIdValue)
-	if !isSuccess {
-		context.Error(customeError.SomethingWentWrong)
-		return
-	}
-
-	userIdValue := context.GetString("userId")
-	userId, isSuccess := controller.Helper.StringToUint(userIdValue)
-	if !isSuccess {
-		context.Error(customeError.SomethingWentWrong)
-		return
-	}
-
-	transaction := controller.Repo.BeginTransaction()
-	if isSuccess := controller.TodoRepo.Delete(transaction, todoId, userId); !isSuccess {
-		context.Error(customeError.TodoCouldntDelete)
-		return
-	}
-	transaction.Commit()
-
-	context.JSON(200, response.Success)
+	context.JSON(200, response.TodosResponse{
+		BaseResponse: response.BaseResponse{IsSuccess: true,},
+		Todos: todos,
+	})
 }
 
 func (controller *TodoController) UpdateItem(context *gin.Context) {
@@ -113,4 +91,31 @@ func (controller *TodoController) UpdateItem(context *gin.Context) {
 
 	context.JSON(200, response.Success)
 }
+
+func (controller *TodoController) DeleteItem(context *gin.Context) {
+	todoIdValue := context.Param("todoId")
+	todoId, isSuccess := controller.Helper.StringToUint(todoIdValue)
+	if !isSuccess {
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
+
+	userIdValue := context.GetString("userId")
+	userId, isSuccess := controller.Helper.StringToUint(userIdValue)
+	if !isSuccess {
+		context.Error(customeError.SomethingWentWrong)
+		return
+	}
+
+	transaction := controller.Repo.BeginTransaction()
+	if isSuccess := controller.TodoRepo.Delete(transaction, todoId, userId); !isSuccess {
+		context.Error(customeError.TodoCouldntDelete)
+		return
+	}
+	transaction.Commit()
+
+	context.JSON(200, response.Success)
+}
+
+
 
