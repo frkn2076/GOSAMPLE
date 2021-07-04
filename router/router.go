@@ -14,7 +14,7 @@ func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	
 	accountController := controllers.AccountController{AccountRepo: repo.Account, Repo: repo.Repo, Helper: helper.HelperInstance}
-	todoController := controllers.TodoController{TodoRepo: repo.Todo, Repo: repo.Repo}
+	todoController := controllers.TodoController{TodoRepo: repo.Todo, Repo: repo.Repo, Helper: helper.HelperInstance}
 	heartBeatController := controllers.HeartBeatController{}
 
 	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: repo.Localization, MongoOperator: db.Mongo}
