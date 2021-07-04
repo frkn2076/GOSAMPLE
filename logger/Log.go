@@ -4,16 +4,23 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 	"strings"
+	"time"
 
 	"gorm.io/gorm/logger"
 )
 
-var info *log.Logger = initFileLogger("InfoLog")
-var error *log.Logger = initFileLogger("ErrorLog")
-var transaction *log.Logger = initFileLogger("TransactionLog")
-var QueryLogger logger.Interface = initQueryLogger("TransactionLog")
+func Start() {
+	info = initFileLogger("InfoLog")
+	error = initFileLogger("ErrorLog")
+	transaction = initFileLogger("TransactionLog")
+	QueryLogger = initQueryLogger("TransactionLog")
+}
+
+var info *log.Logger
+var error *log.Logger
+var transaction *log.Logger
+var QueryLogger logger.Interface
 
 func ErrorLog(logText ...interface{}) {
 	error.Println(logText)
@@ -27,7 +34,6 @@ func TransactionLog(logText ...interface{}) {
 	transaction.Println(logText)
 }
 
-
 func initFileLogger(folderName string) *log.Logger {
 	dt := time.Now()
 	today := dt.Format("02-Jan-2006")
@@ -38,10 +44,10 @@ func initFileLogger(folderName string) *log.Logger {
 	_, err := os.Stat(fileName)
 	fileNotExist := os.IsNotExist(err)
 
-	if fileNotExist { 
+	if fileNotExist {
 		folderPath := strings.TrimSuffix(loggerFilePath, "/%s.log")
 		formattedFolderPath := fmt.Sprintf(folderPath, folderName)
-    os.MkdirAll(formattedFolderPath, 0700) // Create your folder
+		os.MkdirAll(formattedFolderPath, 0700) // Create your folder
 	}
 
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
@@ -69,4 +75,3 @@ func initQueryLogger(folderName string) logger.Interface {
 	)
 	return newLogger
 }
-
