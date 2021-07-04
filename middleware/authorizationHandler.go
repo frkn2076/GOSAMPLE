@@ -1,16 +1,8 @@
 package middleware
 
 import (
-	// "bytes"
-	// "encoding/json"
-	// "io/ioutil"
-	// "fmt"
-	// "context"
 	"strings"
 
-	// "app/GoSample/controllers/models/response"
-	// "app/GoSample/db"
-	// "app/GoSample/infra/resource"
 	"app/GoSample/infra/auth"
 	"app/GoSample/infra/customeError"
 	"app/GoSample/logger"
@@ -19,7 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthorizationHandler() gin.HandlerFunc {
+type AuthorizationMiddleware struct {} 
+
+func (authorization *AuthorizationMiddleware) AuthorizationHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		clientToken := context.Request.Header.Get("Authorization")
 		if clientToken == constant.EmptyString {
