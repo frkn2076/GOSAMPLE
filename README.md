@@ -7,7 +7,7 @@
    - Set ENV variable as DEV to run Development environment (like ENV=DEV)
    - Set ENV variable as STAGE to run Staging environment (like ENV=STAGE)
    - Set ENV variable as PROD to run Production environment (like ENV=PROD)
-* **docker-compose --env-file .env up**
+* **docker-compose --env-file root.env up**
 
 <br>
 
