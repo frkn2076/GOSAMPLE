@@ -42,6 +42,6 @@
 <br>
 
 **PS:** 
-* Exported Postman document is attached to root folder of project.
+* Exported Postman document for all services, is attached to root folder of project.
 * Also deployed services are open for a while like Register Post service: http://37.148.212.195:5000/account/register
 <br>
