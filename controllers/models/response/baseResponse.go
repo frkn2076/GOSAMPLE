@@ -7,6 +7,6 @@ func init() {
 }
 
 type BaseResponse struct {
-	IsSuccess 		bool   	`json:"isSuccess"`
-	ErrorMessage  string 	`json:"errorMessage"`
+	IsSuccess 		bool
+	ErrorMessage  string
 }
