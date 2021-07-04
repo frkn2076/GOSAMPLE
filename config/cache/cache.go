@@ -3,6 +3,7 @@ package cache
 import (
 	"runtime/debug"
 	"time"
+	"fmt"
 
 	"app/GoSample/logger"
 
@@ -14,7 +15,7 @@ var cache *freecache.Cache = loadCache()
 func loadCache() *freecache.Cache {
 	cacheSize := 100 * 1024 * 1024
 	cache := freecache.NewCache(cacheSize)
-	logger.InfoLog("Cache created with size:", cacheSize)
+	fmt.Println("Cache created with size:", cacheSize)
 	debug.SetGCPercent(20)
 	return cache
 }
