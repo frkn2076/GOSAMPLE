@@ -38,3 +38,9 @@
 * **JWT-go** as authorization, please visit for more detail https://github.com/dgrijalva/jwt-go
 * **Testify** for unit tests, please visit for more detail https://github.com/stretchr/testify
 * **Docker** for containerization, please visit for more detail https://www.docker.com
+
+<br>
+
+**PS:** Exported Postman document is attached to root folder of project.
+
+<br>
