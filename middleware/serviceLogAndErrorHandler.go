@@ -2,20 +2,25 @@ package middleware
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"time"
 
 	"app/GoSample/controllers/models/response"
+	"app/GoSample/logger"
 	"app/GoSample/db"
+	"app/GoSample/db/repo"
 	"app/GoSample/infra/constant"
 	"app/GoSample/infra/resource"
-	"app/GoSample/logger"
 
 	"github.com/gin-gonic/gin"
 )
+
+type ServiceLogAndErrorMiddleware struct{
+	MongoOperator db.IMongo
+	LocalizationRepo repo.ILocalizationRepo
+}
 
 type bodyLogWriter struct {
 	gin.ResponseWriter
@@ -27,7 +32,7 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-func ServiceLogAndErrorHandler() gin.HandlerFunc {
+func (middleware *ServiceLogAndErrorMiddleware) ServiceLogAndErrorHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		logRecord := map[string]interface{}{}
 		now := time.Now()
@@ -64,10 +69,11 @@ func ServiceLogAndErrorHandler() gin.HandlerFunc {
 
 		if len(context.Errors) > 0 {
 			errorMessageKey := context.Errors[0].Error()
-			errorMessage := resource.GetResource(errorMessageKey, language)
+			resourcer := resource.Resource{LocalizationRepo: middleware.LocalizationRepo}
+			errorMessage := resourcer.GetResource(errorMessageKey, language)
 			responseBody := &response.BaseResponse{IsSuccess: false, ErrorMessage: errorMessage} 
 			logRecord["ResponseBody"] = responseBody
-			insertLogRecord(logRecord)
+			middleware.MongoOperator.InsertRecord("RequestReponseLogs", logRecord)
 			context.JSON(200, responseBody)
 		} else {
 			var responseBody map[string]interface{}
@@ -77,16 +83,8 @@ func ServiceLogAndErrorHandler() gin.HandlerFunc {
 			} else {
 				logRecord["ResponseBody"] = responseBody
 			}
-			insertLogRecord(logRecord)
+			middleware.MongoOperator.InsertRecord("RequestReponseLogs", logRecord)
 		}
-	}
-}
-
-func insertLogRecord(record map[string]interface{}) {
-	collection := db.MongoDB.Collection("RequestReponseLogs")
-	_, err := collection.InsertOne(context.Background(), record)
-	if err != nil {
-		logger.ErrorLog("An error occured while inserting log record to mongo db - Error:", err.Error(), "- LogRecord:", record)
 	}
 }
 

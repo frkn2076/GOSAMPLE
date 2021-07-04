@@ -9,8 +9,11 @@ import (
 	"app/GoSample/logger"
 )
 
-// Cache feeder
-func init() {
+type Resource struct{
+	LocalizationRepo repo.ILocalizationRepo
+}
+
+func CacheFeeder() {
 	if localizations, err := repo.Localization.GetAll(); err != nil {
 		errorMessage := fmt.Sprintf("An error occured while loading localizations to cache: %s", err.Error())
 		logger.ErrorLog(errorMessage)
@@ -22,14 +25,14 @@ func init() {
 	}
 }
 
-func GetResource(resource string, language string) string {
+func (res *Resource) GetResource(resource string, language string) string {
 	key := generateResourceKey(resource, language)
 	message := cache.Get(key)
 	if message != constant.EmptyString {
 		return message
 	}
 
-	localization, err := repo.Localization.First(resource, language)
+	localization, err := res.LocalizationRepo.First(resource, language)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Resource not found in database key: %s - Error: %s", key, err.Error())
 		logger.ErrorLog(errorMessage)
@@ -37,11 +40,11 @@ func GetResource(resource string, language string) string {
 	}
 
 	message = localization.Message
-	SetResource(resource, language, message)
+	res.SetResource(resource, language, message)
 	return message
 }
 
-func SetResource(resource string, language string, message string) {
+func (res *Resource) SetResource(resource string, language string, message string) {
 	key := generateResourceKey(resource, language)
 	cache.Set(key, message, 0)
 }

@@ -3,6 +3,9 @@ package router
 import (
 	"app/GoSample/controllers"
 	"app/GoSample/middleware"
+	"app/GoSample/db"
+	"app/GoSample/db/repo"
+	"app/GoSample/controllers/helper"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,29 +13,32 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 	
-	accountController := new(controllers.AccountController)
-	heartBeatController := new(controllers.HeartBeatController)
-	todoController := new(controllers.TodoController)
+	accountController := controllers.AccountController{AccountRepo: repo.Account, Repo: repo.Repo, Helper: helper.HelperInstance}
+	todoController := controllers.TodoController{TodoRepo: repo.Todo, Repo: repo.Repo}
+	heartBeatController := controllers.HeartBeatController{}
+
+	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: repo.Localization, MongoOperator: db.Mongo}
+	authorizationMiddleware := middleware.AuthorizationMiddleware{}
 	
-	accountRoute := router.Group("/account").Use(middleware.ServiceLogAndErrorHandler())
+	accountRoute := router.Group("/account").Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	{
 		accountRoute.POST("login", accountController.Login)
 		accountRoute.POST("register", accountController.Register)
 	}
 	
-	heartbeatRoute := router.Group("/heartbeat").Use(middleware.ServiceLogAndErrorHandler())
+	heartbeatRoute := router.Group("/heartbeat").Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	{
 		heartbeatRoute.GET("/reports", heartBeatController.GetAllReports)
 		heartbeatRoute.GET("/clearcache", heartBeatController.ClearCache)
 	}
 	
-	todoRoute:= router.Group("/todo").Use(middleware.AuthorizationHandler()).Use(middleware.ServiceLogAndErrorHandler())
+	todoRoute:= router.Group("/todo").Use(authorizationMiddleware.AuthorizationHandler()).Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	{
 		todoRoute.POST("/add", todoController.AddItem)
 		todoRoute.GET("/getall", todoController.GetAllItems)
 		todoRoute.POST("/update", todoController.UpdateItem)
 		todoRoute.GET("/delete/:todoId", todoController.DeleteItem)
 	}
-		
+
 	return router
 }
