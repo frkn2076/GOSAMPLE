@@ -3,16 +3,16 @@ package environments
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/joho/godotenv"
 )
 
 func Load() {
 	environment := "LOCAL-DEFAULT"
-	argument := strings.Join(os.Args, " ")
-	if strings.HasPrefix(argument, "go run main.go") && len(os.Args) > 1 {
-		environment = os.Args[1]
+	if len(os.Args) > 1 {
+		if os.Args[1] == "DEV" || os.Args[1] == "STAGE" || os.Args[1] == "PROD" {
+			environment = os.Args[1]
+		}
 	} 
 
 	fmt.Println("Environment selected as", environment)
