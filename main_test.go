@@ -96,7 +96,7 @@ func registerRequestFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -131,7 +131,7 @@ func registerHashPasswordFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -166,7 +166,7 @@ func registerUserExistCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -201,7 +201,7 @@ func registerAccountCreateFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -236,7 +236,7 @@ func registerAddToSessionFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -271,7 +271,7 @@ func registerGenerateTokenFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -306,7 +306,7 @@ func registerSuccessfullyCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("register", accountController.Register)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/register", bytes.NewBuffer(requestBytes))
@@ -341,7 +341,7 @@ func loginRequestFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("login", accountController.Login)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(requestBytes))
@@ -376,7 +376,7 @@ func loginUserNameNotFoundCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("login", accountController.Login)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(requestBytes))
@@ -411,7 +411,7 @@ func loginCheckPasswordFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("login", accountController.Login)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(requestBytes))
@@ -446,7 +446,7 @@ func loginAddToSessionFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("login", accountController.Login)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(requestBytes))
@@ -481,7 +481,7 @@ func loginGenerateTokenFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("login", accountController.Login)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(requestBytes))
@@ -516,7 +516,7 @@ func loginSuccessfullyCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("login", accountController.Login)
 
-	request := req.AccountRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"}, UserName: "furkan", Password: "12345"}
+	request := req.AccountRequest{BaseRequest: req.BaseRequest{Language: "TR"}, UserName: "furkan", Password: "12345"}
 	requestBytes, _ := json.Marshal(request)
 
 	context.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(requestBytes))
@@ -551,7 +551,7 @@ func addItemRequestFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("add", todoController.AddItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -587,7 +587,7 @@ func addItemStringToUintFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("add", todoController.AddItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -623,7 +623,7 @@ func addItemCreateTodoFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("add", todoController.AddItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -659,7 +659,7 @@ func addItemSuccessfullyCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("add", todoController.AddItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -769,7 +769,7 @@ func updateItemRequestFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("update", todoController.UpdateItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -804,7 +804,7 @@ func updateItemStringToUintFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("update", todoController.UpdateItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -839,7 +839,7 @@ func updateItemUpdateTodoFailCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("update", todoController.UpdateItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
@@ -874,7 +874,7 @@ func updateItemSuccessfullyCase(t *testing.T) {
 	router.Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	router.POST("update", todoController.UpdateItem)
 
-	request := req.TodoRequest{BaseRequest: req.BaseRequest{Version: "0.0.1", Language: "TR"},
+	request := req.TodoRequest{BaseRequest: req.BaseRequest{Language: "TR"},
 		Name: "DummyName1", Description: "DummyDescription1", Deadline: time.Now(), IsCompleted: true}
 	requestBytes, _ := json.Marshal(request)
 
