@@ -67,10 +67,10 @@ func initQueryLogger(folderName string) logger.Interface {
 	newLogger := logger.New(
 		transactionLogger,
 		logger.Config{
-			SlowThreshold:             time.Second, // Slow SQL threshold
-			LogLevel:                  logger.Info, // Log level
-			IgnoreRecordNotFoundError: false,       // Ignore ErrRecordNotFound error for logger
-			Colorful:                  false,       // Disable color
+			SlowThreshold:             time.Second,
+			LogLevel:                  logger.Info,
+			IgnoreRecordNotFoundError: false,
+			Colorful:                  false,
 		},
 	)
 	return newLogger
