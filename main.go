@@ -1,14 +1,25 @@
 package main
 
 import (
-	_ "app/GoSample/config/environments"
-	_ "app/GoSample/db"
-	_ "app/GoSample/logger"
-	_ "app/GoSample/infra/resource"
+	"app/GoSample/config/environments"
+	"app/GoSample/config/session"
+	"app/GoSample/logger"
+	"app/GoSample/db"
+	"app/GoSample/infra/resource"
 	"app/GoSample/router"
 )
 
 func main() {
+	environments.Load()
+	session.Start()
+	logger.Start()
+
+	db.ConnectDatabases()
+	db.MigrateTables()
+	db.InitScripts()
+
+	resource.CacheFeeder()
+
 	routing := router.SetupRouter()
 	routing.Run(":5000")
 }
