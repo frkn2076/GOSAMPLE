@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"app/GoSample/config/cache"
-	"app/GoSample/controllers/models/response"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +16,8 @@ func (u *HeartBeatController) GetAllReports(context *gin.Context) {
 	context.JSON(200, report)
 }
 
-func (u *HeartBeatController) ClearCache(context *gin.Context) {
-	cache.Reset()
-	context.JSON(200, response.Success)
-}
+// Will be using when admin login feature added
+// func (u *HeartBeatController) ClearCache(context *gin.Context) {
+// 	cache.Reset()
+// 	context.JSON(200, response.Success)
+// }
