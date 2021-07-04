@@ -14,11 +14,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type TodoController struct{}
+type TodoController struct{
+	TodoRepo repo.ITodoRepo
+	Repo repo.IRepo
+	Helper helper.IHelper
+}
 
-func (u *TodoController) AddItem(context *gin.Context) {
+func (controller *TodoController) AddItem(context *gin.Context) {
 	var todoRequest request.TodoRequest
-	if isSuccess := helper.BindRequest(context, &todoRequest); !isSuccess{
+	if isSuccess := controller.Helper.BindRequest(context, &todoRequest); !isSuccess{
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
@@ -34,8 +38,8 @@ func (u *TodoController) AddItem(context *gin.Context) {
 	todo := entities.Todo{UserId: uint(userId), Name: todoRequest.Name, Description: todoRequest.Description, Deadline: todoRequest.Deadline,
 		IsCompleted: todoRequest.IsCompleted}
 
-	transaction := repo.BeginTransaction()
-	if isSuccess := repo.Todo.Create(transaction, todo); !isSuccess{
+	transaction := controller.Repo.BeginTransaction()
+	if isSuccess := controller.TodoRepo.Create(transaction, todo); !isSuccess{
 		context.Error(customeError.TodoCouldntCreate)
 		return
 	}
@@ -44,9 +48,9 @@ func (u *TodoController) AddItem(context *gin.Context) {
 	context.JSON(200, response.Success)
 }
 
-func (u *TodoController) GetAllItems(context *gin.Context) {
+func (controller *TodoController) GetAllItems(context *gin.Context) {
 	userId := context.GetString("userId")
-	todoRecords, isSuccess := repo.Todo.GetAll(userId)
+	todoRecords, isSuccess := controller.TodoRepo.GetAll(userId)
 	if !isSuccess {
 		context.Error(customeError.SomethingWentWrong)
 		return
@@ -62,7 +66,7 @@ func (u *TodoController) GetAllItems(context *gin.Context) {
 	context.JSON(200, response.TodosResponse{Todos: todos})
 }
 
-func (u *TodoController) DeleteItem(context *gin.Context) {
+func (controller *TodoController) DeleteItem(context *gin.Context) {
 	todoIdValue := context.Param("todoId")
 	todoId, err := strconv.ParseUint(todoIdValue, 10, 32)
 	if err != nil {
@@ -79,8 +83,8 @@ func (u *TodoController) DeleteItem(context *gin.Context) {
 		return
 	}
 
-	transaction := repo.BeginTransaction()
-	if isSuccess := repo.Todo.Delete(transaction, uint(todoId), uint(userId)); !isSuccess {
+	transaction := controller.Repo.BeginTransaction()
+	if isSuccess := controller.TodoRepo.Delete(transaction, uint(todoId), uint(userId)); !isSuccess {
 		context.Error(customeError.TodoCouldntDelete)
 		return
 	}
@@ -89,9 +93,9 @@ func (u *TodoController) DeleteItem(context *gin.Context) {
 	context.JSON(200, response.Success)
 }
 
-func (u *TodoController) UpdateItem(context *gin.Context) {
+func (controller *TodoController) UpdateItem(context *gin.Context) {
 	var todoRequest request.TodoRequest
-	if isSuccess := helper.BindRequest(context, &todoRequest); !isSuccess{
+	if isSuccess := controller.Helper.BindRequest(context, &todoRequest); !isSuccess{
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
@@ -107,8 +111,8 @@ func (u *TodoController) UpdateItem(context *gin.Context) {
 	todo := entities.Todo{Id: todoRequest.Id, UserId: uint(userId),  Name: todoRequest.Name, Description: todoRequest.Description,
 		 Deadline: todoRequest.Deadline, IsCompleted: todoRequest.IsCompleted}
 
-	transaction := repo.BeginTransaction()
-	if isSuccess := repo.Todo.Update(transaction, todo); !isSuccess {
+	transaction := controller.Repo.BeginTransaction()
+	if isSuccess := controller.TodoRepo.Update(transaction, todo); !isSuccess {
 		context.Error(customeError.TodoCouldntUpdate)
 		return
 	}
