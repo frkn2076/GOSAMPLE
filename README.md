@@ -3,7 +3,7 @@
 <br>
 
 ## To run docker compose
-* **Modify .env file first. It has ENV=DEV as default.**
+* **Modify root.env file first. It has ENV=DEV as default.**
    - Set ENV variable as DEV to run Development environment (like ENV=DEV)
    - Set ENV variable as STAGE to run Staging environment (like ENV=STAGE)
    - Set ENV variable as PROD to run Production environment (like ENV=PROD)
