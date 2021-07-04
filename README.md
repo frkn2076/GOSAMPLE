@@ -35,7 +35,7 @@
 * **Gorm** as ORM tool, please visit for more detail https://gorm.io
 * **Mongo** as NoSQL database, please visit for more detail https://www.mongodb.com
 * **PostgreSQL** as SQL database, please visit for more detail https://www.postgresql.org
-* **JWT-go** as authorization, please visit for more detail https://github.com/dgrijalva/jwt-go
+* **JWT-go** for authorization, please visit for more detail https://github.com/dgrijalva/jwt-go
 * **Testify** for unit tests, please visit for more detail https://github.com/stretchr/testify
 * **Docker** for containerization, please visit for more detail https://www.docker.com
 
