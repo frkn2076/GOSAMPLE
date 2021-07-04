@@ -12,4 +12,5 @@ type IHelper interface {
 	HashPassword(context *gin.Context, password string) (string, bool)
 	CheckPasswordHash(password, hash string) bool
 	GenerateToken(userId uint) (string, bool)
+	StringToUint(input string) (uint, bool)
 }

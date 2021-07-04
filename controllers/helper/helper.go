@@ -2,6 +2,7 @@ package helper
 
 import (
 	"os"
+	"strconv"
 
 	"app/GoSample/config/session"
 	"app/GoSample/infra/auth"
@@ -73,4 +74,13 @@ func (h *Helper) GenerateToken(userId uint) (string, bool) {
 		return constant.EmptyString, false
 	}
 	return token, true
+}
+
+func (h *Helper) StringToUint(input string) (uint, bool) {
+	convertedValue, err := strconv.ParseUint(input, 10, 32)
+	if err != nil {
+		logger.ErrorLog("An error occured while converting string to uint - Value:", convertedValue, "- Error:", err.Error())
+		return 0, false
+	}
+	return uint(convertedValue), true
 }
