@@ -5,7 +5,10 @@ import (
 	"database/sql"
 	"os"
 	"time"
+	"io/ioutil"
+	"strings"
 
+	"app/GoSample/infra/constant"
 	"app/GoSample/db/entities"
 	"app/GoSample/logger"
 
@@ -20,10 +23,60 @@ var PostgreDB *sql.DB
 var MongoDB *mongo.Database
 var GormDB *gorm.DB
 
-func init() {
+func ConnectDatabases(){
 	PostgreDB = initPostgreDB()
 	MongoDB = initMongoDB()
 	GormDB = initGorm()
+}
+
+func MigrateTables() {
+	GormDB.AutoMigrate(&entities.Account{}, &entities.Localization{}, &entities.Todo{})
+}
+
+func InitScripts() {
+	initScriptPath := os.Getenv("InitSQLFilePath")
+	initScriptFile, err := ioutil.ReadFile(initScriptPath)
+	if err != nil {
+		logger.ErrorLog("An error occured while reading init.sql file - dbInitializer.go - Error:", err.Error())
+	}
+	initScript := string(initScriptFile)
+
+	transaction, err := PostgreDB.Begin()
+	if err != nil {
+		logger.ErrorLog("An error occured while beginning transaction - dbInitializer.go - Error:", err.Error())
+	} else {
+		logger.TransactionLog("Transaction began")
+	}
+
+	defer func() {
+		err := transaction.Rollback()
+		if err != nil {
+			logger.ErrorLog("An error occured while rollbacking transaction - dbInitializer.go - Error:", err.Error())
+		} else {
+			logger.TransactionLog("Transaction rollback")
+		}
+	}()
+
+	for _, statement := range strings.Split(initScript, constant.NextLine) {
+		statement := strings.TrimSpace(statement)
+		if statement == constant.EmptyString {
+			continue
+		}
+		if _, err := transaction.Exec(statement); err != nil {
+			logger.ErrorLog("An error occured while executing statements - dbInitializer.go - Error:", err.Error())
+		} else {
+			logger.TransactionLog(statement)
+		}
+	}
+
+	err = transaction.Commit()
+	if err != nil {
+		logger.ErrorLog("An error occured while committing transaction - dbInitializer.go - Error:", err.Error())
+	} else {
+		logger.TransactionLog("Transaction committed")
+	}
+
+	logger.InfoLog("Init sql script has runned")
 }
 
 func initPostgreDB() *sql.DB {
@@ -82,9 +135,5 @@ func initGorm() *gorm.DB {
 		os.Exit(0)
 	}
 
-	gormDB.AutoMigrate(&entities.Account{}, &entities.Localization{}, &entities.Todo{})
-
-	InitScripts(PostgreDB)
-	logger.InfoLog("Init sql script has runned")
 	return gormDB
 }
