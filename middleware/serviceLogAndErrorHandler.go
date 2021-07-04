@@ -54,8 +54,10 @@ func (middleware *ServiceLogAndErrorMiddleware) ServiceLogAndErrorHandler() gin.
 		if err := json.Unmarshal(requestBodyBytes, &requestBody); err != nil {
 			logger.ErrorLog("An error occured while request body unmarshal:", requestBodyBytes, " - And selected 'EN' as default language")
 			language = "EN"
-		} else {
+		} else if requestBody["Language"] != nil {
 			language = fmt.Sprintf("%v", requestBody["Language"])
+		} else {
+			language = "EN"
 		}
 
 		logRecord["RequestBody"] = requestBody
