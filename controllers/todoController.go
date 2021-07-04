@@ -1,14 +1,11 @@
 package controllers
 
 import (
-	"strconv"
-
 	"app/GoSample/controllers/helper"
 	"app/GoSample/controllers/models/request"
 	"app/GoSample/controllers/models/response"
 	"app/GoSample/db/entities"
 	"app/GoSample/db/repo"
-	"app/GoSample/logger"
 	"app/GoSample/infra/customeError"
 
 	"github.com/gin-gonic/gin"
@@ -28,14 +25,13 @@ func (controller *TodoController) AddItem(context *gin.Context) {
 	}
 
 	userIdValue := context.GetString("userId")
-	userId, err := strconv.ParseUint(userIdValue, 10, 32)
-	if err != nil {
-		logger.ErrorLog("An error occured while converting string to uint - Value:", userIdValue, "- Error:", err.Error())
+	userId, isSuccess := controller.Helper.StringToUint(userIdValue)
+	if !isSuccess {
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
 
-	todo := entities.Todo{UserId: uint(userId), Name: todoRequest.Name, Description: todoRequest.Description, Deadline: todoRequest.Deadline,
+	todo := entities.Todo{UserId: userId, Name: todoRequest.Name, Description: todoRequest.Description, Deadline: todoRequest.Deadline,
 		IsCompleted: todoRequest.IsCompleted}
 
 	transaction := controller.Repo.BeginTransaction()
@@ -68,23 +64,21 @@ func (controller *TodoController) GetAllItems(context *gin.Context) {
 
 func (controller *TodoController) DeleteItem(context *gin.Context) {
 	todoIdValue := context.Param("todoId")
-	todoId, err := strconv.ParseUint(todoIdValue, 10, 32)
-	if err != nil {
-		logger.ErrorLog("An error occured while converting string to uint - Value:", todoIdValue, "- Error:", err.Error())
+	todoId, isSuccess := controller.Helper.StringToUint(todoIdValue)
+	if !isSuccess {
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
 
 	userIdValue := context.GetString("userId")
-	userId, err := strconv.ParseUint(userIdValue, 10, 32)
-	if err != nil {
-		logger.ErrorLog("An error occured while converting string to uint - Value:", userIdValue, "- Error:", err.Error())
+	userId, isSuccess := controller.Helper.StringToUint(userIdValue)
+	if !isSuccess {
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
 
 	transaction := controller.Repo.BeginTransaction()
-	if isSuccess := controller.TodoRepo.Delete(transaction, uint(todoId), uint(userId)); !isSuccess {
+	if isSuccess := controller.TodoRepo.Delete(transaction, todoId, userId); !isSuccess {
 		context.Error(customeError.TodoCouldntDelete)
 		return
 	}
@@ -101,9 +95,8 @@ func (controller *TodoController) UpdateItem(context *gin.Context) {
 	}
 
 	userIdValue := context.GetString("userId")
-	userId, err := strconv.ParseUint(userIdValue, 10, 32)
-	if err != nil {
-		logger.ErrorLog("An error occured while converting string to uint - Value:", userIdValue, "- Error:", err.Error())
+	userId, isSuccess := controller.Helper.StringToUint(userIdValue)
+	if !isSuccess {
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
