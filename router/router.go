@@ -29,7 +29,8 @@ func SetupRouter() *gin.Engine {
 	heartbeatRoute := router.Group("/heartbeat").Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	{
 		heartbeatRoute.GET("/reports", heartBeatController.GetAllReports)
-		heartbeatRoute.GET("/clearcache", heartBeatController.ClearCache)
+		// Will be using when admin login feature added
+		// heartbeatRoute.GET("/clearcache", heartBeatController.ClearCache)
 	}
 	
 	todoRoute:= router.Group("/todo").Use(authorizationMiddleware.AuthorizationHandler()).Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
