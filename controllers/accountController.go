@@ -51,15 +51,15 @@ func (controller *AccountController) Register(context *gin.Context) {
 		return
 	}
 
-	token, isSuccess := controller.Helper.GenerateToken(account.Id)
+	token, isSuccess := controller.Helper.GenerateToken(userId)
 	if !isSuccess {
 		context.Error(customeError.SomethingWentWrong)
 		return
 	}
 
 	context.JSON(200, response.AccountResponse{
-			BaseResponse: response.BaseResponse{IsSuccess: true,},
-			Token: token,
+		BaseResponse: response.BaseResponse{IsSuccess: true,},
+		Token: token,
 	})
 }
 
