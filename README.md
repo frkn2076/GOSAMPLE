@@ -3,11 +3,11 @@
 <br>
 
 ## To run docker compose
-* **Modify .env file first. It has ENV=DEV as default.**
+* **Modify root.env file first. It has ENV=DEV as default.**
    - Set ENV variable as DEV to run Development environment (like ENV=DEV)
    - Set ENV variable as STAGE to run Staging environment (like ENV=STAGE)
    - Set ENV variable as PROD to run Production environment (like ENV=PROD)
-* **docker-compose --env-file .env up**
+* **docker-compose --env-file root.env up**
 
 <br>
 
@@ -35,12 +35,13 @@
 * **Gorm** as ORM tool, please visit for more detail https://gorm.io
 * **Mongo** as NoSQL database, please visit for more detail https://www.mongodb.com
 * **PostgreSQL** as SQL database, please visit for more detail https://www.postgresql.org
-* **JWT-go** as authorization, please visit for more detail https://github.com/dgrijalva/jwt-go
+* **JWT-go** for authorization, please visit for more detail https://github.com/dgrijalva/jwt-go
 * **Testify** for unit tests, please visit for more detail https://github.com/stretchr/testify
 * **Docker** for containerization, please visit for more detail https://www.docker.com
 
 <br>
 
-**PS:** Exported Postman document is attached to root folder of project.
-
+**PS:** 
+* Exported Postman document for all services, is attached to root folder of project.
+* Also deployed services are open for a while like Register Post service: http://37.148.212.195:5000/account/register
 <br>
