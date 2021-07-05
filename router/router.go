@@ -17,9 +17,12 @@ func SetupRouter() *gin.Engine {
 	todoController := controllers.TodoController{TodoRepo: repo.Todo, Repo: repo.Repo, Helper: helper.HelperInstance}
 	heartBeatController := controllers.HeartBeatController{}
 
-	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: repo.Localization, MongoOperator: db.Mongo}
+	corsMiddleware := middleware.CORSMiddleware{}
 	authorizationMiddleware := middleware.AuthorizationMiddleware{}
+	serviceLogAndErrorMiddleware := middleware.ServiceLogAndErrorMiddleware{LocalizationRepo: repo.Localization, MongoOperator: db.Mongo}
 	
+	router.Use(corsMiddleware.CORSHandler())
+
 	accountRoute := router.Group("/account").Use(serviceLogAndErrorMiddleware.ServiceLogAndErrorHandler())
 	{
 		accountRoute.POST("login", accountController.Login)
